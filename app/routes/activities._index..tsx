@@ -1,22 +1,46 @@
 import { Activity } from "~/types/Activity";
 import { API_BASE_URL } from "~/utils/constants";
 import { ActionFunctionArgs, json } from "@remix-run/cloudflare";
-import { Link, useActionData, useLoaderData } from "@remix-run/react";
+import { useActionData, useLoaderData } from "@remix-run/react";
 import toast from "react-hot-toast";
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
+import DatedActivitiesList from "~/components/DatedActivitiesList";
 
 export async function loader() {
   const response = await fetch(`${API_BASE_URL}/activities`);
   const data: Activity[] = await response.json();
 
-  const nonArchivedActivities = data.filter(
+  const sortedActivities = data.sort(
+    (a, b) =>
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
+
+  const nonArchivedActivities = sortedActivities.filter(
     (activity) => !activity.is_archived
   );
-  return json({ nonArchivedActivities });
+
+  const groupedByDate = nonArchivedActivities.reduce((acc, activity) => {
+    const date = new Date(activity.created_at).toLocaleDateString();
+
+    const existingDate = acc.find((a) => a.date === date);
+
+    if (existingDate) {
+      existingDate.activities.push(activity);
+    } else {
+      acc.push({ date, activities: [activity] });
+    }
+
+    return acc;
+  }, [] as { date: string; activities: Activity[] }[]);
+
+  return json({
+    data: groupedByDate,
+    totalActivities: nonArchivedActivities.length,
+  });
 }
 
 const Index = () => {
-  const { nonArchivedActivities } = useLoaderData<typeof loader>();
+  const { data, totalActivities } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
 
   useEffect(() => {
@@ -36,29 +60,34 @@ const Index = () => {
     }
   }, [actionData]);
 
+  const allActivityIds = data
+    .map((datedActivity) =>
+      datedActivity.activities.map((activity) => activity.id)
+    )
+    .flat();
+
   return (
-    <div>
-      <form method="POST">
-        {/* hidden input with activity id of all */}
-        <input
-          type="hidden"
-          name="activityIds"
-          value={nonArchivedActivities.map((activity) => activity.id)}
-        />
-        <button className="bg-gray-900 text-white rounded-md m-4 p-4">
-          Archive All
-        </button>
-      </form>
-      {nonArchivedActivities.map((activity: Activity) => {
+    <div className="max-w-2xl mx-auto p-4">
+      <div className="flex justify-between items-center ">
+        <h2 className="text-xl font-bold">{totalActivities} Activities</h2>
+        <form method="POST">
+          <input
+            type="hidden"
+            name="activityIds"
+            value={allActivityIds.join(",")}
+          />
+          <button className="bg-gray-900 text-white rounded-md py-2 px-5">
+            Archive All
+          </button>
+        </form>
+      </div>
+
+      {data.map((datedActivity) => {
         return (
-          <Link
-            unstable_viewTransition
-            to={activity.id}
-            key={activity.id}
-            className="m-4 p-4 block border border-black"
-          >
-            {activity.id}
-          </Link>
+          <DatedActivitiesList
+            datedActivity={datedActivity}
+            key={datedActivity.date}
+          />
         );
       })}
     </div>
