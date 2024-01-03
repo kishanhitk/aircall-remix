@@ -1,7 +1,12 @@
 import { Activity } from "~/types/Activity";
 import { API_BASE_URL } from "~/utils/constants";
 import { ActionFunctionArgs, json } from "@remix-run/cloudflare";
-import { useFetcher, useLoaderData } from "@remix-run/react";
+import {
+  isRouteErrorResponse,
+  useFetcher,
+  useLoaderData,
+  useRouteError,
+} from "@remix-run/react";
 import toast from "react-hot-toast";
 import { useEffect } from "react";
 import DatedActivitiesList from "~/components/DatedActivitiesList";
@@ -134,3 +139,17 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     successfulPromises: successfulPromises.length,
   });
 };
+
+export function ErrorBoundary() {
+  return (
+    <div className="max-w-2xl mx-auto p-4">
+      <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+        Oops, something went wrong. Go back to the{" "}
+        <a href="/activities" className="underline">
+          homepage
+        </a>
+        .
+      </div>
+    </div>
+  );
+}
