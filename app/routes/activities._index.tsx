@@ -1,24 +1,31 @@
 import { Activity } from "~/types/Activity";
 import { API_BASE_URL } from "~/utils/constants";
 import { ActionFunctionArgs, json } from "@remix-run/cloudflare";
-import { useFetcher, useLoaderData } from "@remix-run/react";
-import { useEffect } from "react";
+import {
+  isRouteErrorResponse,
+  useFetcher,
+  useLoaderData,
+  useRouteError,
+} from "@remix-run/react";
 import toast from "react-hot-toast";
+import { useEffect } from "react";
 import DatedActivitiesList from "~/components/DatedActivitiesList";
 import Button from "~/components/Button";
 
 export async function loader() {
   const response = await fetch(`${API_BASE_URL}/activities`);
   const data: Activity[] = await response.json();
+
   const sortedActivities = data.sort(
     (a, b) =>
       new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   );
 
-  const archivedActivities = sortedActivities.filter(
-    (activity) => activity.is_archived
+  const nonArchivedActivities = sortedActivities.filter(
+    (activity) => !activity.is_archived
   );
-  const groupedByDate = archivedActivities.reduce((acc, activity) => {
+
+  const groupedByDate = nonArchivedActivities.reduce((acc, activity) => {
     const date = new Date(activity.created_at).toLocaleDateString();
 
     const existingDate = acc.find((a) => a.date === date);
@@ -34,7 +41,7 @@ export async function loader() {
 
   return json({
     data: groupedByDate,
-    totalActivities: archivedActivities.length,
+    totalActivities: nonArchivedActivities.length,
   });
 }
 
@@ -47,13 +54,13 @@ const Index = () => {
     if (actionData) {
       if (actionData.successfulPromises > 0) {
         toast.success(
-          `Successfully unarchived ${actionData.successfulPromises} activities`
+          `Successfully archived ${actionData.successfulPromises} activities`
         );
       }
 
       if (actionData.failedPromises > 0) {
         toast.error(
-          `Failed to unarchive ${actionData.failedPromises} activities`
+          `Failed to archive ${actionData.failedPromises} activities`
         );
       }
     }
@@ -65,19 +72,20 @@ const Index = () => {
     )
     .flat();
 
+  const isLoading =
+    fetcher.state === "loading" || fetcher.state === "submitting";
+
   return (
     <div className="max-w-2xl mx-auto p-4">
       <div className="flex justify-between items-center ">
-        <h2 className="text-xl font-bold">
-          {totalActivities} Archieved Activities
-        </h2>
+        <h2 className="text-xl font-bold">{totalActivities} Activities</h2>
         <fetcher.Form method="POST">
           <input
             type="hidden"
             name="activityIds"
             value={allActivityIds.join(",")}
           />
-          {allActivityIds.length > 0 ? <Button>Unarchive All</Button> : null}
+          <Button isLoading={isLoading}>Archive All</Button>
         </fetcher.Form>
       </div>
 
@@ -116,7 +124,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ is_archived: false }),
+      body: JSON.stringify({ is_archived: true }),
     })
   );
 

@@ -9,14 +9,14 @@ export const HeaderLink = ({ href, title }: HeaderLinkProps) => {
   return (
     <NavLink
       unstable_viewTransition
-      prefetch="none"
+      prefetch="intent"
       to={href}
       className={({ isActive }) =>
         clsx(
           isActive
-            ? "bg-white text-black border-black border-2"
-            : "bg-gray-100 text-black border-gray-100 border-2",
-          "p-3 m-5 block "
+            ? " border-black border-b-2 text-gray-900 font-medium"
+            : "text-gray-800",
+          "p-3 mx-2 block"
         )
       }
     >
