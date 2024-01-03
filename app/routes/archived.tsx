@@ -5,6 +5,7 @@ import { useActionData, useLoaderData } from "@remix-run/react";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import DatedActivitiesList from "~/components/DatedActivitiesList";
+import Button from "~/components/Button";
 
 export async function loader() {
   const response = await fetch(`${API_BASE_URL}/activities`);
@@ -43,7 +44,6 @@ const Index = () => {
 
   useEffect(() => {
     if (actionData) {
-      console.log("actionData", actionData);
       if (actionData.successfulPromises > 0) {
         toast.success(
           `Successfully unarchived ${actionData.successfulPromises} activities`
@@ -76,11 +76,7 @@ const Index = () => {
             name="activityIds"
             value={allActivityIds.join(",")}
           />
-          {allActivityIds.length > 0 ? (
-            <button className="bg-gray-900 text-white rounded-md py-2 px-5">
-              Unarchive All
-            </button>
-          ) : null}
+          {allActivityIds.length > 0 ? <Button>Unarchive All</Button> : null}
         </form>
       </div>
 

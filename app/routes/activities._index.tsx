@@ -1,10 +1,11 @@
 import { Activity } from "~/types/Activity";
 import { API_BASE_URL } from "~/utils/constants";
 import { ActionFunctionArgs, json } from "@remix-run/cloudflare";
-import { useActionData, useLoaderData } from "@remix-run/react";
+import { useFetcher, useLoaderData } from "@remix-run/react";
 import toast from "react-hot-toast";
 import { useEffect } from "react";
 import DatedActivitiesList from "~/components/DatedActivitiesList";
+import Button from "~/components/Button";
 
 export async function loader() {
   const response = await fetch(`${API_BASE_URL}/activities`);
@@ -41,11 +42,11 @@ export async function loader() {
 
 const Index = () => {
   const { data, totalActivities } = useLoaderData<typeof loader>();
-  const actionData = useActionData<typeof action>();
+  const fetcher = useFetcher();
+  const actionData = fetcher.data;
 
   useEffect(() => {
     if (actionData) {
-      console.log("actionData", actionData);
       if (actionData.successfulPromises > 0) {
         toast.success(
           `Successfully archived ${actionData.successfulPromises} activities`
@@ -66,20 +67,21 @@ const Index = () => {
     )
     .flat();
 
+  const isLoading =
+    fetcher.state === "loading" || fetcher.state === "submitting";
+
   return (
     <div className="max-w-2xl mx-auto p-4">
       <div className="flex justify-between items-center ">
         <h2 className="text-xl font-bold">{totalActivities} Activities</h2>
-        <form method="POST">
+        <fetcher.Form method="POST">
           <input
             type="hidden"
             name="activityIds"
             value={allActivityIds.join(",")}
           />
-          <button className="bg-gray-900 text-white rounded-md py-2 px-5">
-            Archive All
-          </button>
-        </form>
+          <Button isLoading={isLoading}>Archive All</Button>
+        </fetcher.Form>
       </div>
 
       {data.map((datedActivity) => {
