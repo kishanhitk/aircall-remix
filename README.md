@@ -11,6 +11,7 @@
 - Archieve/Unarchieve individual activity
 - Clean, Minimalistic UI
 - Server Rendered
+- TypeScript
 - Utilises Pre-Fetching for faster navigation
 - Route Level Error Boundary
 - Smooth View Transition

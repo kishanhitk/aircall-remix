@@ -1,7 +1,7 @@
 import { Activity } from "~/types/Activity";
 import { API_BASE_URL } from "~/utils/constants";
 import { ActionFunctionArgs, json } from "@remix-run/cloudflare";
-import { useActionData, useLoaderData } from "@remix-run/react";
+import { useFetcher, useLoaderData } from "@remix-run/react";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import DatedActivitiesList from "~/components/DatedActivitiesList";
@@ -40,7 +40,8 @@ export async function loader() {
 
 const Index = () => {
   const { data, totalActivities } = useLoaderData<typeof loader>();
-  const actionData = useActionData<typeof action>();
+  const fetcher = useFetcher();
+  const actionData = fetcher.data;
 
   useEffect(() => {
     if (actionData) {
@@ -70,14 +71,14 @@ const Index = () => {
         <h2 className="text-xl font-bold">
           {totalActivities} Archieved Activities
         </h2>
-        <form method="POST">
+        <fetcher.Form method="POST">
           <input
             type="hidden"
             name="activityIds"
             value={allActivityIds.join(",")}
           />
           {allActivityIds.length > 0 ? <Button>Unarchive All</Button> : null}
-        </form>
+        </fetcher.Form>
       </div>
 
       {data.map((datedActivity) => {
