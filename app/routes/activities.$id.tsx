@@ -59,10 +59,6 @@ const Index = () => {
       >
         <div className="flex justify-between">
           <div className="flex flex-col space-y-3 text-xl">
-            <div>
-              <span className="text-gray-600 text-sm">ID: </span>
-              {activity.id ?? "N/A"}
-            </div>
             {activity.call_type === "missed" ? (
               <PhoneMissed className="text-red-500 h-10 w-10" />
             ) : activity.call_type === "voicemail" ? (
