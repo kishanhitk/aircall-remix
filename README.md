@@ -1,7 +1,23 @@
-# Welcome to Remix!
+# Aircall Submission by Kishan
 
-- [Remix Docs](https://remix.run/docs)
+[Live Deploy URL](https://aircall-remix.pages.dev/)
 
+## Features
+- List of all non-archived activities. Grouped by date.
+- List of all archived activities. Grouped by date.
+- Individual Activity Detail Page
+- Archieve all activities at once
+- Unarchieve all archived at once
+- Archieve/Unarchieve individual activity
+- Clean, Minimalistic UI
+- Server Rendered
+- Utilises Pre-Fetching for faster navigation
+- Route Level Error Boundary
+- Smooth View Transition
+- Notifications by `react-hot-toast`
+- Deployed on Cloudflare Edge
+- Responsive Design
+- Perfect 100 Lighthouse Score
 ## Development
 
 You will be utilizing Wrangler for local development to emulate the Cloudflare runtime. This is already wired up in your package.json as the `dev` script:
