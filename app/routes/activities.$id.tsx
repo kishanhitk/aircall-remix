@@ -73,6 +73,10 @@ const Index = () => {
               <span className="text-gray-600 text-sm">Duration: </span>
               {millisecondsToHHMMSS(activity.duration) ?? "N/A"}
             </div>
+            <div className="text-xs">
+              <span className="text-gray-600 text-sm">ID: </span>
+              {activity.id ?? "N/A"}
+            </div>
           </div>
           <div className="flex flex-col text-xl text-right space-y-3">
             <fetcher.Form method="POST">
