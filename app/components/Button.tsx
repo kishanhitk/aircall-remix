@@ -5,14 +5,16 @@ export interface ButtonProps {
   children: React.ReactNode;
   disabled?: boolean;
   isLoading?: boolean;
+  className?: string;
 }
-const Button = ({ children, disabled, isLoading }: ButtonProps) => {
+const Button = ({ children, disabled, isLoading, className }: ButtonProps) => {
   return (
     <button
       className={clsx(
         "bg-gray-900 text-white rounded-md py-2 px-5 hover:bg-gray-800 hover:shadow-md transition-all duration-300 flex items-center justify-between",
         disabled ? "opacity-50 cursor-not-allowed" : "",
-        isLoading ? "opacity-50 cursor-wait" : ""
+        isLoading ? "opacity-50 cursor-wait" : "",
+        className
       )}
       disabled={disabled || isLoading}
     >

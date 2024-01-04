@@ -20,7 +20,7 @@ export default function Index() {
         </a>
       </h1>
       <Link to="/activities" className="block animate-in " prefetch="render">
-        <Button>Explore Activities</Button>
+        <Button className="mx-auto">Explore Activities</Button>
       </Link>
       <p className="animate-in my-5">
         Checkout the source code on{" "}
