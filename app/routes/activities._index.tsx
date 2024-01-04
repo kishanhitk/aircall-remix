@@ -85,7 +85,10 @@ const Index = () => {
             name="activityIds"
             value={allActivityIds.join(",")}
           />
-          <Button isLoading={isLoading}>Archive All</Button>
+
+          <Button isLoading={isLoading}>
+            {!isLoading ? "Archive All" : "Achiving.."}
+          </Button>
         </fetcher.Form>
       </div>
 

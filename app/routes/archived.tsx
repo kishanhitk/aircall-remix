@@ -65,6 +65,9 @@ const Index = () => {
     )
     .flat();
 
+  const isLoading =
+    fetcher.state === "submitting" || fetcher.state === "loading";
+
   return (
     <div className="max-w-2xl mx-auto p-4">
       <div className="flex justify-between items-center ">
@@ -77,7 +80,11 @@ const Index = () => {
             name="activityIds"
             value={allActivityIds.join(",")}
           />
-          {allActivityIds.length > 0 ? <Button>Unarchive All</Button> : null}
+          {allActivityIds.length > 0 ? (
+            <Button isLoading={isLoading}>
+              {!isLoading ? "Unarchive All" : "Unachiving.."}
+            </Button>
+          ) : null}
         </fetcher.Form>
       </div>
 
